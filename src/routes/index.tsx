@@ -18,7 +18,7 @@ function Home() {
     (async () => {
       const { data } = await supabase
         .from("configs")
-        .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,download_count,created_at,profiles(username,avatar_url)")
+        .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,dislike_count,comment_count,download_count,created_at,profiles(username,avatar_url)")
         .order("created_at", { ascending: false })
         .limit(8);
       setRecent((data ?? []) as unknown as ConfigCardData[]);

@@ -37,9 +37,9 @@ function WmPage() {
     (async () => {
       const { data } = await supabase
         .from("configs")
-        .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,download_count,created_at,profiles(username,avatar_url)")
+        .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,dislike_count,comment_count,download_count,created_at,profiles(username,avatar_url)")
         .eq("wm_type", type as WmType)
-        .order(sort === "top" ? "like_count" : "created_at", { ascending: false })
+        .order(sort === "top" ? "score" : "created_at", { ascending: false })
         .limit(60);
       setConfigs((data ?? []) as unknown as ConfigCardData[]);
       setLoading(false);

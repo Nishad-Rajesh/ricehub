@@ -38,7 +38,7 @@ function ProfilePage() {
       if (p) {
         const { data: c } = await supabase
           .from("configs")
-          .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,download_count,created_at,profiles(username,avatar_url)")
+          .select("id,title,description,wm_type,other_wm_name,screenshot_url,like_count,dislike_count,comment_count,download_count,created_at,profiles(username,avatar_url)")
           .eq("user_id", p.user_id)
           .order("created_at", { ascending: false });
         setConfigs((c ?? []) as unknown as ConfigCardData[]);
