@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { Terminal, Upload, LogOut, User as UserIcon } from "lucide-react";
+import { Terminal, Upload, LogOut, User as UserIcon, Heart } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +31,10 @@ export function Header() {
           </Link>
           <Link to="/upload" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" activeProps={{ className: "text-foreground" }}>
             Upload
+          </Link>
+          <Link to="/donate" className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" activeProps={{ className: "text-foreground" }}>
+            <Heart className="h-3.5 w-3.5" />
+            Donate
           </Link>
         </nav>
 
