@@ -14,7 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      configs: {
+        Row: {
+          config_file_name: string
+          config_file_path: string
+          created_at: string
+          description: string | null
+          download_count: number
+          id: string
+          like_count: number
+          other_wm_name: string | null
+          screenshot_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          wm_type: Database["public"]["Enums"]["wm_type"]
+        }
+        Insert: {
+          config_file_name: string
+          config_file_path: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          id?: string
+          like_count?: number
+          other_wm_name?: string | null
+          screenshot_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          wm_type: Database["public"]["Enums"]["wm_type"]
+        }
+        Update: {
+          config_file_name?: string
+          config_file_path?: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          id?: string
+          like_count?: number
+          other_wm_name?: string | null
+          screenshot_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          wm_type?: Database["public"]["Enums"]["wm_type"]
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          config_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          config_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          config_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +132,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      wm_type: "hyprland" | "i3" | "sway" | "awesome" | "bspwm" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +259,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      wm_type: ["hyprland", "i3", "sway", "awesome", "bspwm", "other"],
+    },
   },
 } as const
