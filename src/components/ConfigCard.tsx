@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Download, ImageOff, Github } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Download, ImageOff, Github } from "lucide-react";
 import { WM_MAP, type WmType } from "@/lib/wm";
 import { formatDistanceToNow } from "date-fns";
 
@@ -11,6 +11,8 @@ export type ConfigCardData = {
   other_wm_name: string | null;
   screenshot_url: string | null;
   like_count: number;
+  dislike_count?: number;
+  comment_count?: number;
   download_count: number;
   created_at: string;
   github_repo_full_name?: string | null;
@@ -61,9 +63,21 @@ export function ConfigCard({ config }: { config: ConfigCardData }) {
           <span className="font-mono">@{config.profiles?.username ?? "unknown"}</span>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <Heart className="h-3 w-3" />
+              <ThumbsUp className="h-3 w-3" />
               {config.like_count}
             </span>
+            {(config.dislike_count ?? 0) > 0 && (
+              <span className="flex items-center gap-1">
+                <ThumbsDown className="h-3 w-3" />
+                {config.dislike_count}
+              </span>
+            )}
+            {(config.comment_count ?? 0) > 0 && (
+              <span className="flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                {config.comment_count}
+              </span>
+            )}
             <span className="flex items-center gap-1">
               <Download className="h-3 w-3" />
               {config.download_count}

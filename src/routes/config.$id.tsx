@@ -5,7 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { WM_MAP, type WmType } from "@/lib/wm";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Download, Trash2, ImageOff, Loader2, Github, Star, ExternalLink } from "lucide-react";
+import { Comments } from "@/components/Comments";
+import { ThumbsUp, ThumbsDown, Download, Trash2, ImageOff, Loader2, Github, Star, ExternalLink } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
@@ -20,6 +21,7 @@ type ConfigDetail = {
   config_file_name: string;
   screenshot_url: string | null;
   like_count: number;
+  dislike_count: number;
   download_count: number;
   created_at: string;
   github_repo_url: string | null;
@@ -28,6 +30,8 @@ type ConfigDetail = {
   github_repo_description: string | null;
   profiles: { username: string; display_name: string | null; avatar_url: string | null } | null;
 };
+
+type Vote = "like" | "dislike" | null;
 
 export const Route = createFileRoute("/config/$id")({
   component: ConfigDetailPage,
@@ -38,7 +42,8 @@ function ConfigDetailPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [config, setConfig] = useState<ConfigDetail | null>(null);
-  const [liked, setLiked] = useState(false);
+  const [vote, setVote] = useState<Vote>(null);
+  const [voting, setVoting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -49,25 +54,63 @@ function ConfigDetailPage() {
       .maybeSingle();
     setConfig(data as ConfigDetail | null);
     if (user && data) {
-      const { data: l } = await supabase.from("likes").select("id").eq("config_id", id).eq("user_id", user.id).maybeSingle();
-      setLiked(!!l);
+      const [{ data: l }, { data: d }] = await Promise.all([
+        supabase.from("likes").select("id").eq("config_id", id).eq("user_id", user.id).maybeSingle(),
+        supabase.from("dislikes").select("id").eq("config_id", id).eq("user_id", user.id).maybeSingle(),
+      ]);
+      setVote(l ? "like" : d ? "dislike" : null);
+    } else {
+      setVote(null);
     }
     setLoading(false);
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id, user?.id]);
 
-  const toggleLike = async () => {
+  // Refresh counts (server-of-truth via triggers) without spinner
+  const refreshCounts = async () => {
+    const { data } = await supabase
+      .from("configs")
+      .select("like_count,dislike_count")
+      .eq("id", id)
+      .maybeSingle();
+    if (data && config) {
+      setConfig({ ...config, like_count: data.like_count, dislike_count: data.dislike_count });
+    }
+  };
+
+  const castVote = async (next: Exclude<Vote, null>) => {
     if (!user) return navigate({ to: "/auth" });
-    if (!config) return;
-    if (liked) {
-      await supabase.from("likes").delete().eq("config_id", config.id).eq("user_id", user.id);
-      setLiked(false);
-      setConfig({ ...config, like_count: Math.max(0, config.like_count - 1) });
-    } else {
-      await supabase.from("likes").insert({ config_id: config.id, user_id: user.id });
-      setLiked(true);
-      setConfig({ ...config, like_count: config.like_count + 1 });
+    if (!config || voting) return;
+    setVoting(true);
+    const prev = vote;
+
+    try {
+      // Toggling off the current vote
+      if (prev === next) {
+        const table = next === "like" ? "likes" : "dislikes";
+        const { error } = await supabase.from(table).delete().eq("config_id", config.id).eq("user_id", user.id);
+        if (error) throw error;
+        setVote(null);
+      } else {
+        // Switching: remove the opposite first if present
+        if (prev) {
+          const oppTable = prev === "like" ? "likes" : "dislikes";
+          const { error: delErr } = await supabase.from(oppTable).delete().eq("config_id", config.id).eq("user_id", user.id);
+          if (delErr) throw delErr;
+        }
+        const table = next === "like" ? "likes" : "dislikes";
+        const { error: insErr } = await supabase.from(table).insert({ config_id: config.id, user_id: user.id });
+        // Ignore unique-violation (means we already voted — race)
+        if (insErr && insErr.code !== "23505") throw insErr;
+        setVote(next);
+      }
+      await refreshCounts();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Vote failed");
+      setVote(prev);
+    } finally {
+      setVoting(false);
     }
   };
 
@@ -121,11 +164,28 @@ function ConfigDetailPage() {
             </Link>
           )}
         </div>
-        <div className="flex gap-2">
-          <Button variant={liked ? "default" : "outline"} onClick={toggleLike}>
-            <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-            {config.like_count}
-          </Button>
+        <div className="flex flex-wrap gap-2">
+          <div className="flex items-center overflow-hidden rounded-md border border-border">
+            <button
+              onClick={() => castVote("like")}
+              disabled={voting}
+              aria-pressed={vote === "like"}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${vote === "like" ? "bg-primary/15 text-primary" : "hover:bg-muted"}`}
+            >
+              <ThumbsUp className={`h-4 w-4 ${vote === "like" ? "fill-current" : ""}`} />
+              {config.like_count}
+            </button>
+            <div className="h-6 w-px bg-border" />
+            <button
+              onClick={() => castVote("dislike")}
+              disabled={voting}
+              aria-pressed={vote === "dislike"}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${vote === "dislike" ? "bg-destructive/15 text-destructive" : "hover:bg-muted"}`}
+            >
+              <ThumbsDown className={`h-4 w-4 ${vote === "dislike" ? "fill-current" : ""}`} />
+              {config.dislike_count}
+            </button>
+          </div>
           {hasFile && (
             <Button onClick={onDownload}>
               <Download className="h-4 w-4" />
@@ -193,6 +253,8 @@ function ConfigDetailPage() {
         {hasFile && <div>file: <span className="text-foreground">{config.config_file_name}</span></div>}
         <div>downloads: <span className="text-foreground">{config.download_count}</span></div>
       </div>
+
+      <Comments configId={config.id} ownerId={config.user_id} />
     </main>
   );
 }
