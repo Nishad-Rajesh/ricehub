@@ -14,12 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      comments: {
+        Row: {
+          config_id: string
+          content: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "configs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       configs: {
         Row: {
+          comment_count: number
           config_file_name: string
           config_file_path: string
           created_at: string
           description: string | null
+          dislike_count: number
           download_count: number
           github_repo_description: string | null
           github_repo_full_name: string | null
@@ -28,6 +78,7 @@ export type Database = {
           id: string
           like_count: number
           other_wm_name: string | null
+          score: number
           screenshot_url: string | null
           title: string
           updated_at: string
@@ -35,10 +86,12 @@ export type Database = {
           wm_type: Database["public"]["Enums"]["wm_type"]
         }
         Insert: {
+          comment_count?: number
           config_file_name: string
           config_file_path: string
           created_at?: string
           description?: string | null
+          dislike_count?: number
           download_count?: number
           github_repo_description?: string | null
           github_repo_full_name?: string | null
@@ -47,6 +100,7 @@ export type Database = {
           id?: string
           like_count?: number
           other_wm_name?: string | null
+          score?: number
           screenshot_url?: string | null
           title: string
           updated_at?: string
@@ -54,10 +108,12 @@ export type Database = {
           wm_type: Database["public"]["Enums"]["wm_type"]
         }
         Update: {
+          comment_count?: number
           config_file_name?: string
           config_file_path?: string
           created_at?: string
           description?: string | null
+          dislike_count?: number
           download_count?: number
           github_repo_description?: string | null
           github_repo_full_name?: string | null
@@ -66,6 +122,7 @@ export type Database = {
           id?: string
           like_count?: number
           other_wm_name?: string | null
+          score?: number
           screenshot_url?: string | null
           title?: string
           updated_at?: string
@@ -73,6 +130,35 @@ export type Database = {
           wm_type?: Database["public"]["Enums"]["wm_type"]
         }
         Relationships: []
+      }
+      dislikes: {
+        Row: {
+          config_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          config_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          config_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dislikes_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "configs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       github_connections: {
         Row: {
