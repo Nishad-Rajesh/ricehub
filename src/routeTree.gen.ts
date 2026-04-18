@@ -15,6 +15,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WmTypeRouteImport } from './routes/wm.$type'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as ConfigIdRouteImport } from './routes/config.$id'
+import { Route as ApiGithubInitiateRouteImport } from './routes/api.github.initiate'
+import { Route as ApiGithubCallbackRouteImport } from './routes/api.github.callback'
 
 const UploadRoute = UploadRouteImport.update({
   id: '/upload',
@@ -46,6 +48,16 @@ const ConfigIdRoute = ConfigIdRouteImport.update({
   path: '/config/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGithubInitiateRoute = ApiGithubInitiateRouteImport.update({
+  id: '/api/github/initiate',
+  path: '/api/github/initiate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGithubCallbackRoute = ApiGithubCallbackRouteImport.update({
+  id: '/api/github/callback',
+  path: '/api/github/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +66,8 @@ export interface FileRoutesByFullPath {
   '/config/$id': typeof ConfigIdRoute
   '/u/$username': typeof UUsernameRoute
   '/wm/$type': typeof WmTypeRoute
+  '/api/github/callback': typeof ApiGithubCallbackRoute
+  '/api/github/initiate': typeof ApiGithubInitiateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByTo {
   '/config/$id': typeof ConfigIdRoute
   '/u/$username': typeof UUsernameRoute
   '/wm/$type': typeof WmTypeRoute
+  '/api/github/callback': typeof ApiGithubCallbackRoute
+  '/api/github/initiate': typeof ApiGithubInitiateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +87,8 @@ export interface FileRoutesById {
   '/config/$id': typeof ConfigIdRoute
   '/u/$username': typeof UUsernameRoute
   '/wm/$type': typeof WmTypeRoute
+  '/api/github/callback': typeof ApiGithubCallbackRoute
+  '/api/github/initiate': typeof ApiGithubInitiateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +99,18 @@ export interface FileRouteTypes {
     | '/config/$id'
     | '/u/$username'
     | '/wm/$type'
+    | '/api/github/callback'
+    | '/api/github/initiate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/upload' | '/config/$id' | '/u/$username' | '/wm/$type'
+  to:
+    | '/'
+    | '/auth'
+    | '/upload'
+    | '/config/$id'
+    | '/u/$username'
+    | '/wm/$type'
+    | '/api/github/callback'
+    | '/api/github/initiate'
   id:
     | '__root__'
     | '/'
@@ -91,6 +119,8 @@ export interface FileRouteTypes {
     | '/config/$id'
     | '/u/$username'
     | '/wm/$type'
+    | '/api/github/callback'
+    | '/api/github/initiate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +130,8 @@ export interface RootRouteChildren {
   ConfigIdRoute: typeof ConfigIdRoute
   UUsernameRoute: typeof UUsernameRoute
   WmTypeRoute: typeof WmTypeRoute
+  ApiGithubCallbackRoute: typeof ApiGithubCallbackRoute
+  ApiGithubInitiateRoute: typeof ApiGithubInitiateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -146,6 +178,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/github/initiate': {
+      id: '/api/github/initiate'
+      path: '/api/github/initiate'
+      fullPath: '/api/github/initiate'
+      preLoaderRoute: typeof ApiGithubInitiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/github/callback': {
+      id: '/api/github/callback'
+      path: '/api/github/callback'
+      fullPath: '/api/github/callback'
+      preLoaderRoute: typeof ApiGithubCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -156,6 +202,8 @@ const rootRouteChildren: RootRouteChildren = {
   ConfigIdRoute: ConfigIdRoute,
   UUsernameRoute: UUsernameRoute,
   WmTypeRoute: WmTypeRoute,
+  ApiGithubCallbackRoute: ApiGithubCallbackRoute,
+  ApiGithubInitiateRoute: ApiGithubInitiateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

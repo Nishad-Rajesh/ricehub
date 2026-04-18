@@ -21,6 +21,10 @@ export type Database = {
           created_at: string
           description: string | null
           download_count: number
+          github_repo_description: string | null
+          github_repo_full_name: string | null
+          github_repo_stars: number | null
+          github_repo_url: string | null
           id: string
           like_count: number
           other_wm_name: string | null
@@ -36,6 +40,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           download_count?: number
+          github_repo_description?: string | null
+          github_repo_full_name?: string | null
+          github_repo_stars?: number | null
+          github_repo_url?: string | null
           id?: string
           like_count?: number
           other_wm_name?: string | null
@@ -51,6 +59,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           download_count?: number
+          github_repo_description?: string | null
+          github_repo_full_name?: string | null
+          github_repo_stars?: number | null
+          github_repo_url?: string | null
           id?: string
           like_count?: number
           other_wm_name?: string | null
@@ -59,6 +71,42 @@ export type Database = {
           updated_at?: string
           user_id?: string
           wm_type?: Database["public"]["Enums"]["wm_type"]
+        }
+        Relationships: []
+      }
+      github_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          github_avatar_url: string | null
+          github_user_id: number
+          github_username: string
+          id: string
+          scope: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          github_avatar_url?: string | null
+          github_user_id: number
+          github_username: string
+          id?: string
+          scope?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          github_avatar_url?: string | null
+          github_user_id?: number
+          github_username?: string
+          id?: string
+          scope?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
