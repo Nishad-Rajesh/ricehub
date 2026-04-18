@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { WM_MAP, type WmType } from "@/lib/wm";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Download, Trash2, ImageOff, Loader2 } from "lucide-react";
+import { Heart, Download, Trash2, ImageOff, Loader2, Github, Star, ExternalLink } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
@@ -22,6 +22,10 @@ type ConfigDetail = {
   like_count: number;
   download_count: number;
   created_at: string;
+  github_repo_url: string | null;
+  github_repo_full_name: string | null;
+  github_repo_stars: number | null;
+  github_repo_description: string | null;
   profiles: { username: string; display_name: string | null; avatar_url: string | null } | null;
 };
 
@@ -67,8 +71,10 @@ function ConfigDetailPage() {
     }
   };
 
+  const hasFile = config && !config.config_file_path.startsWith("_repo:");
+
   const onDownload = async () => {
-    if (!config) return;
+    if (!config || !hasFile) return;
     const { data, error } = await supabase.storage.from("configs").createSignedUrl(config.config_file_path, 60, { download: config.config_file_name });
     if (error || !data) return toast.error("Download failed");
     window.location.href = data.signedUrl;
@@ -79,7 +85,7 @@ function ConfigDetailPage() {
   const onDelete = async () => {
     if (!config || !user || user.id !== config.user_id) return;
     if (!confirm("Delete this config?")) return;
-    await supabase.storage.from("configs").remove([config.config_file_path]);
+    if (hasFile) await supabase.storage.from("configs").remove([config.config_file_path]);
     await supabase.from("configs").delete().eq("id", config.id);
     toast.success("Deleted");
     navigate({ to: "/" });
@@ -120,10 +126,20 @@ function ConfigDetailPage() {
             <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
             {config.like_count}
           </Button>
-          <Button onClick={onDownload}>
-            <Download className="h-4 w-4" />
-            Download
-          </Button>
+          {hasFile && (
+            <Button onClick={onDownload}>
+              <Download className="h-4 w-4" />
+              Download
+            </Button>
+          )}
+          {config.github_repo_url && (
+            <Button asChild variant={hasFile ? "outline" : "default"}>
+              <a href={config.github_repo_url} target="_blank" rel="noopener noreferrer">
+                <Github className="h-4 w-4" />
+                View repo
+              </a>
+            </Button>
+          )}
           {isOwner && (
             <Button variant="outline" onClick={onDelete}>
               <Trash2 className="h-4 w-4" />
@@ -148,8 +164,33 @@ function ConfigDetailPage() {
         </div>
       )}
 
+      {config.github_repo_url && (
+        <a
+          href={config.github_repo_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50"
+        >
+          <Github className="mt-0.5 h-5 w-5 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm text-foreground">{config.github_repo_full_name}</span>
+              {config.github_repo_stars != null && (
+                <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                  <Star className="h-3 w-3" />{config.github_repo_stars}
+                </span>
+              )}
+            </div>
+            {config.github_repo_description && (
+              <p className="mt-1 text-xs text-muted-foreground">{config.github_repo_description}</p>
+            )}
+          </div>
+          <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+        </a>
+      )}
+
       <div className="mt-6 rounded-xl border border-border bg-card p-4 font-mono text-xs text-muted-foreground">
-        <div>file: <span className="text-foreground">{config.config_file_name}</span></div>
+        {hasFile && <div>file: <span className="text-foreground">{config.config_file_name}</span></div>}
         <div>downloads: <span className="text-foreground">{config.download_count}</span></div>
       </div>
     </main>

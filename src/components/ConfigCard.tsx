@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Download, ImageOff } from "lucide-react";
+import { Heart, Download, ImageOff, Github } from "lucide-react";
 import { WM_MAP, type WmType } from "@/lib/wm";
 import { formatDistanceToNow } from "date-fns";
 
@@ -13,6 +13,7 @@ export type ConfigCardData = {
   like_count: number;
   download_count: number;
   created_at: string;
+  github_repo_full_name?: string | null;
   profiles: { username: string; avatar_url: string | null } | null;
 };
 
@@ -47,7 +48,12 @@ export function ConfigCard({ config }: { config: ConfigCardData }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-1 text-sm font-semibold tracking-tight text-foreground">{config.title}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="line-clamp-1 text-sm font-semibold tracking-tight text-foreground">{config.title}</h3>
+          {config.github_repo_full_name && (
+            <Github className="mt-0.5 h-3 w-3 shrink-0 text-muted-foreground" />
+          )}
+        </div>
         {config.description && (
           <p className="line-clamp-2 text-xs text-muted-foreground">{config.description}</p>
         )}
