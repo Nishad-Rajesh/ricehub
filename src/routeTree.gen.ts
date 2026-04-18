@@ -9,38 +9,115 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UploadRouteImport } from './routes/upload'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WmTypeRouteImport } from './routes/wm.$type'
+import { Route as UUsernameRouteImport } from './routes/u.$username'
+import { Route as ConfigIdRouteImport } from './routes/config.$id'
 
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WmTypeRoute = WmTypeRouteImport.update({
+  id: '/wm/$type',
+  path: '/wm/$type',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UUsernameRoute = UUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigIdRoute = ConfigIdRouteImport.update({
+  id: '/config/$id',
+  path: '/config/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/upload': typeof UploadRoute
+  '/config/$id': typeof ConfigIdRoute
+  '/u/$username': typeof UUsernameRoute
+  '/wm/$type': typeof WmTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/upload': typeof UploadRoute
+  '/config/$id': typeof ConfigIdRoute
+  '/u/$username': typeof UUsernameRoute
+  '/wm/$type': typeof WmTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/upload': typeof UploadRoute
+  '/config/$id': typeof ConfigIdRoute
+  '/u/$username': typeof UUsernameRoute
+  '/wm/$type': typeof WmTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/upload'
+    | '/config/$id'
+    | '/u/$username'
+    | '/wm/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/upload' | '/config/$id' | '/u/$username' | '/wm/$type'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/upload'
+    | '/config/$id'
+    | '/u/$username'
+    | '/wm/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  UploadRoute: typeof UploadRoute
+  ConfigIdRoute: typeof ConfigIdRoute
+  UUsernameRoute: typeof UUsernameRoute
+  WmTypeRoute: typeof WmTypeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,21 +125,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wm/$type': {
+      id: '/wm/$type'
+      path: '/wm/$type'
+      fullPath: '/wm/$type'
+      preLoaderRoute: typeof WmTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/u/$username': {
+      id: '/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/config/$id': {
+      id: '/config/$id'
+      path: '/config/$id'
+      fullPath: '/config/$id'
+      preLoaderRoute: typeof ConfigIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  UploadRoute: UploadRoute,
+  ConfigIdRoute: ConfigIdRoute,
+  UUsernameRoute: UUsernameRoute,
+  WmTypeRoute: WmTypeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
