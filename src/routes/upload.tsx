@@ -53,6 +53,7 @@ function UploadPage() {
   const getConn = useServerFn(getGithubConnection);
   const listRepos = useServerFn(listUserRepos);
   const disconnect = useServerFn(disconnectGithub);
+  const moderate = useServerFn(moderateContent);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -129,6 +130,15 @@ function UploadPage() {
 
     setBusy(true);
     try {
+      // Moderate text content (title + description) before doing any uploads
+      const textToCheck = [parsed.data.title, parsed.data.description].filter(Boolean).join("\n\n");
+      const mod = await moderate({ data: { text: textToCheck } });
+      if (!mod.ok) {
+        toast.error(mod.reason ?? "Content was rejected by moderation.");
+        setBusy(false);
+        return;
+      }
+
       let cfgPath = "";
       let cfgName = "";
       if (configFile) {
