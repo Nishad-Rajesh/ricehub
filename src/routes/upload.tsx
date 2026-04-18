@@ -12,6 +12,7 @@ import { Upload as UploadIcon, FileCode, Image as ImageIcon, Github, Star, X, Lo
 import { toast } from "sonner";
 import { z } from "zod";
 import { getGithubConnection, listUserRepos, disconnectGithub, type GithubRepoSummary } from "@/server/github.functions";
+import { moderateContent } from "@/server/moderation.functions";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({
