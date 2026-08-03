@@ -121,7 +121,7 @@ function ConfigDetailPage() {
     const { data, error } = await supabase.storage.from("configs").createSignedUrl(config.config_file_path, 60, { download: config.config_file_name });
     if (error || !data) return toast.error("Download failed");
     window.location.href = data.signedUrl;
-    await supabase.from("configs").update({ download_count: config.download_count + 1 }).eq("id", config.id);
+    await supabase.rpc("increment_download_count", { _config_id: config.id });
     setConfig({ ...config, download_count: config.download_count + 1 });
   };
 
