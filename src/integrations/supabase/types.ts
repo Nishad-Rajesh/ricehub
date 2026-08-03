@@ -263,7 +263,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_download_count: {
+        Args: { _config_id: string }
+        Returns: number
+      }
     }
     Enums: {
       wm_type: "hyprland" | "i3" | "sway" | "awesome" | "bspwm" | "other"
