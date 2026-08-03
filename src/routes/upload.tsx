@@ -11,8 +11,8 @@ import { WM_LIST, type WmType } from "@/lib/wm";
 import { Upload as UploadIcon, FileCode, Image as ImageIcon, Github, Star, X, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { getGithubConnection, listUserRepos, disconnectGithub, type GithubRepoSummary } from "@/server/github.functions";
-import { moderateContent } from "@/server/moderation.functions";
+import { getGithubConnection, listUserRepos, disconnectGithub, type GithubRepoSummary } from "@/lib/github.functions";
+import { moderateContent } from "@/lib/moderation.functions";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({
