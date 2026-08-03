@@ -64,6 +64,7 @@ async function aiModerate(text: string): Promise<ModerationResult> {
 }
 
 export const moderateContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => inputSchema.parse(input))
   .handler(async ({ data }): Promise<ModerationResult> => {
     const bad = findBadWord(data.text);
