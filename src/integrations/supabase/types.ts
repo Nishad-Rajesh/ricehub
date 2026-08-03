@@ -60,6 +60,13 @@ export type Database = {
             referencedRelation: "comments"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comments_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       configs: {
@@ -129,7 +136,15 @@ export type Database = {
           user_id?: string
           wm_type?: Database["public"]["Enums"]["wm_type"]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "configs_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       dislikes: {
         Row: {
